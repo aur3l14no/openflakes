@@ -1,0 +1,8 @@
+result
+result-*
+
+.direnv
+
+__pycache__
+
+*cache.sqlite
