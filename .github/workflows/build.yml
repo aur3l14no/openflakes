@@ -32,6 +32,7 @@ jobs:
         run: |
           nix flake update
           nix develop --command just
+          nix develop --command just update_other_packages
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
