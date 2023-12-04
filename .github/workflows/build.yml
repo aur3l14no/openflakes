@@ -22,7 +22,6 @@ jobs:
       - uses: cachix/cachix-action@v13
         with:
           name: aur3l14no
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Configure user and email
         run: |
