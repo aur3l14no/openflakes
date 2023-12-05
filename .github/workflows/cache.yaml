@@ -1,4 +1,4 @@
-name: "Push cache"
+name: "Push cache" # or, sorry garnix :)
 on:
   check_suite:
     types: [completed]
