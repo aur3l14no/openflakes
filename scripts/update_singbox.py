@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+import os
 import pathlib
 import re
 
@@ -70,7 +71,7 @@ def build(pkg):
 
     max_attempts = 3
     for n_attempts in range(0, max_attempts):
-        p = sh_(f"nix build .#{pkg} --json")
+        p = sh_(f"nix build .#packages.{os.environ['HOST_SYSTEM']}.{pkg} --json")
         if p.returncode != 0:
             try:
                 # mismatch error
@@ -98,7 +99,7 @@ def cachix_push(paths):
 def build_and_push(pkg):
     out = build(pkg)
     j = json.loads(out)
-    paths = [v for o in j for v in o["outputs"].values()] + [o["drvPath"] for o in j]
+    paths = [v for o in j for v in o["outputs"].values()]
     return cachix_push(paths)
 
 
@@ -111,8 +112,8 @@ def commit():
 
 def main():
     for pkg in ("sing-box", "sing-box-prerelease"):
-        if update_github_info(pkg) or True:
-            build_and_push(pkg)
+        update_github_info(pkg)
+        build_and_push(pkg)
     commit()
 
 

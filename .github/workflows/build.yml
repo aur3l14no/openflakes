@@ -10,8 +10,16 @@ jobs:
   build_matrix:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+        # we use emulated native build to generate usable cache
+        runner: [ubuntu-latest, macos-latest]
+        include:
+          - host_system: x86_64-linux
+            build_system: x86_64-linux
+            runner: ubuntu-latest
+          - host_system: aarch64-darwin
+            build_system: aarch64-darwin
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,6 +27,8 @@ jobs:
       - uses: cachix/install-nix-action@v24
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: extra-platforms = ${{ matrix.build_system }}
       - uses: cachix/cachix-action@v13
         with:
           name: aur3l14no
@@ -36,6 +46,7 @@ jobs:
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOST_SYSTEM: ${{ matrix.host_system }}
 
       - name: Push, but okay to fail
         run: git push || true
