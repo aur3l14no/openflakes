@@ -1,13 +1,13 @@
-name: "Build and populate cache"
+name: "Build and update hash"
 on:
   pull_request:
   push:
     branches:
       - master
   schedule:
-    - cron: "41 2 * * *"
+    - cron: "42 12,20,4 * * *" # 4,12,20 in UTC+8
 jobs:
-  build_matrix:
+  build:
     strategy:
       matrix:
         runner: [ubuntu-latest]
@@ -20,6 +20,10 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
           nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            substituters = https://cache.garnix.io https://cache.nixos.org/
+
       - uses: cachix/cachix-action@v13
         with:
           name: aur3l14no
@@ -36,8 +40,7 @@ jobs:
 
       - name: Build and commit
         run: |
-          nix develop --command just
-          nix develop --command just update_other_packages
+          nix develop -c just
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

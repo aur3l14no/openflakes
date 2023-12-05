@@ -19,10 +19,12 @@
       in rec {
         packages = (import ./pkgs/sing-box) pkgs;
         checks = packages;
-        devShell = pkgs.mkShell {
+        devShell = pkgs.mkShellNoCC {
           packages = with pkgs; [
             act
+            fish
             just
+            jq
             (python311.withPackages (ps: with ps; [requests requests-cache tenacity]))
           ];
         };
