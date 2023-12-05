@@ -10,16 +10,15 @@
     self,
     nixpkgs,
     flake-utils,
-  } @ inputs: let
-    packages = import ./pkgs;
-  in
-    flake-utils.lib.eachSystem ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"] (
+  } @ inputs:
+    flake-utils.lib.eachSystem ["x86_64-linux" "aarch64-linux" "aarch64-darwin"] (
       system: let
         pkgs = import nixpkgs {
           inherit system;
         };
-      in {
-        packages = packages.packages pkgs;
+      in rec {
+        packages = (import ./pkgs/sing-box) pkgs;
+        checks = packages;
         devShell = pkgs.mkShell {
           packages = with pkgs; [
             act
@@ -28,8 +27,5 @@
           ];
         };
       }
-    )
-    // {
-      overlays.default = import ./overlays;
-    };
+    );
 }

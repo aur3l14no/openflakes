@@ -22,6 +22,4 @@ def sh_(args):
     return proc
 
 
-system = sh("nix eval --impure --raw --expr 'builtins.currentSystem'")
-
 __all__ = ["sh", "sh_", "l", "system"]

@@ -29,9 +29,13 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Build and commit
+      - name: Update flakes
         run: |
           nix flake update
+          (git add -u && git commit -m 'Bump inputs') || true
+
+      - name: Build and commit
+        run: |
           nix develop --command just
           nix develop --command just update_other_packages
         env:
