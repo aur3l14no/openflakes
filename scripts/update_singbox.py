@@ -84,6 +84,7 @@ def build(pkg):
             except Exception:
                 # unknown error
                 l.error(f"Non-mismatch errors: {p.stderr}")
+                break
         else:
             l.info(f"Build success: {p.stdout}")
             return p.stdout
@@ -98,9 +99,10 @@ def cachix_push(paths):
 
 def build_and_push(pkg):
     out = build(pkg)
-    j = json.loads(out)
-    paths = [v for o in j for v in o["outputs"].values()]
-    return cachix_push(paths)
+    if out:
+        j = json.loads(out)
+        paths = [v for o in j for v in o["outputs"].values()]
+        return cachix_push(paths)
 
 
 def commit():
