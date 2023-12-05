@@ -27,8 +27,10 @@
       in {
         packages =
           (import ./pkgs/sing-box) pkgs
-          // inputs.yaml2nix.outputs.packages.${system}.yaml2nix
-          // inputs.sops-nix.outputs.packages.${system}.sops-install-secrets;
+          // {
+            yaml2nix = inputs.yaml2nix.outputs.packages.${system}.yaml2nix;
+            sops-install-secrets = inputs.sops-nix.outputs.packages.${system}.sops-install-secrets;
+          };
         devShell = pkgs.mkShellNoCC {
           packages = with pkgs; [
             act
