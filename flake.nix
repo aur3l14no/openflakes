@@ -4,8 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    yaml2ninx.url = "github:euank/yaml2nix";
+    yaml2nix.url = "github:euank/yaml2nix";
     sops-nix.url = "github:Mic92/sops-nix";
+  };
+
+  nixConfig = {
+    extra-substituters = ["https://aur3l14no.cachix.org"];
+    extra-trusted-public-keys = ["aur3l14no.cachix.org-1:jxuBM4n3aEvFMkxO1I/LqmAIExoXIkNzAj6tZAd6oC4="];
   };
 
   outputs = {
@@ -22,7 +27,7 @@
       in {
         packages =
           (import ./pkgs/sing-box) pkgs
-          // inputs.yaml2ninx.outputs.packages.${system}.yaml2nin
+          // inputs.yaml2nix.outputs.packages.${system}.yaml2nix
           // inputs.sops-nix.outputs.packages.${system}.sops-install-secrets;
         devShell = pkgs.mkShellNoCC {
           packages = with pkgs; [
