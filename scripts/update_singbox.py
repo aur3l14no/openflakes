@@ -97,7 +97,8 @@ def cachix_push(paths):
 
 def build_and_push(pkg):
     out = build(pkg)
-    paths = [v for o in json.loads(out) for v in o["outputs"].values()]
+    j = json.loads(out)
+    paths = [v for o in j for v in o["outputs"].values()] + [o["drvPath"] for o in j]
     return cachix_push(paths)
 
 
@@ -110,7 +111,7 @@ def commit():
 
 def main():
     for pkg in ("sing-box", "sing-box-prerelease"):
-        if update_github_info(pkg):
+        if update_github_info(pkg) or True:
             build_and_push(pkg)
     commit()
 
