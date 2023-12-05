@@ -14,7 +14,7 @@ CACHIX_NAME = "aur3l14no"
 
 l.basicConfig(level=l.INFO)
 
-commit_message = "Update:"
+commit_message = "Automated updates"
 
 s = requests_cache.CachedSession("requests_cache", expire_after=360)
 
@@ -71,7 +71,7 @@ def build(pkg):
 
     max_attempts = 3
     for n_attempts in range(0, max_attempts):
-        p = sh_(f"nix build .#packages.{os.environ['HOST_SYSTEM']}.{pkg} --json")
+        p = sh_(f"nix build .#{pkg} --json")
         if p.returncode != 0:
             try:
                 # mismatch error

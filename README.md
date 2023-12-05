@@ -11,4 +11,4 @@ My open flakes.
 
 (⚙: automated update)
 
-Currently, automated **build and populate cache** only supports `aarch64-darwin` and `x86_64-linux`.
+Currently, automated **build and populate cache** only supports `x86_64-linux`.
