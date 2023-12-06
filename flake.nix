@@ -31,6 +31,7 @@
             yaml2nix = inputs.yaml2nix.outputs.packages.${system}.yaml2nix;
             sops-install-secrets = inputs.sops-nix.outputs.packages.${system}.sops-install-secrets;
           };
+        formatter = pkgs.alejandra;
         devShell = pkgs.mkShellNoCC {
           packages = with pkgs; [
             act
