@@ -38,7 +38,7 @@
             fish
             just
             jq
-            (python311.withPackages (ps: with ps; [requests requests-cache tenacity]))
+            (python311.withPackages (ps: with ps; [requests requests-cache tenacity typer]))
           ];
         };
       }

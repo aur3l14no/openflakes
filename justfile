@@ -1,5 +1,5 @@
-update_singbox:
-    @python ./scripts/update_singbox.py
+update_singbox *FLAGS:
+    @python ./scripts/update_singbox.py {{FLAGS}}
 
 cache:
     #!/usr/bin/env fish
