@@ -1,9 +1,9 @@
 name: "Build and update hash"
 on:
-  pull_request:
-  push:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
+  workflow_dispatch:
   schedule:
     - cron: "42 12,20,4 * * *" # 4,12,20 in UTC+8
 jobs:
