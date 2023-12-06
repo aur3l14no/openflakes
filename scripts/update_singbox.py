@@ -10,6 +10,8 @@ from tenacity import retry, stop_after_attempt
 from lib import l, sh, sh_
 
 CACHIX_NAME = "aur3l14no"
+RELEASES = 1
+PRERELEASES = 0
 
 l.basicConfig(level=l.INFO)
 
@@ -25,7 +27,7 @@ pkgs: {
 # origin: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/tools/networking/sing-box/default.nix
 # override: https://github.com/NixOS/nixpkgs/issues/86349
 body_template = """
-  "sing-box-{version}" = pkgs.sing-box.override {{
+  "{name}" = pkgs.sing-box.override {{
     buildGoModule = args:
       pkgs.buildGoModule (args
         // {{
@@ -49,36 +51,38 @@ path = pathlib.Path("./pkgs/sing-box/default.nix")
 
 
 @retry(stop=stop_after_attempt(3))
-def fetch_gh_release_ver(recent_releases=3, recent_prereleases=5):
+def fetch_gh_release_ver(is_prerelease=False, count=5):
     """Git latest `n` versions using GitHub API."""
     j = s.get("https://api.github.com/repos/SagerNet/sing-box/releases").json()
-    versions = []
     try:
-        versions.extend([r["name"] for r in j if r["prerelease"]][:recent_prereleases])
-        for ver in [r["name"] for r in j if not r["prerelease"]][:recent_releases]:
-            if ver not in versions:
-                versions.append(ver)
-        return versions
+        return [r["name"] for r in j if r["prerelease"] == is_prerelease][:count]
     except Exception:
         raise Exception(f"Failed to decode {j[0]}")
 
 
-def generate_nix(versions):
+def generate_nix(name_ver_pairs):
     """Generate `sing-box/default.nix`
     Return True if updated.
     """
     global commit_message_detail, path
-    l.info(f"Generating singbox/default.nix from {versions}")
+    l.info(f"Generating singbox/default.nix from {name_ver_pairs}")
+
     old_content = path.read_text()
-    old_versions = re.findall(r'"sing-box-(.*)"', old_content)
-    if old_versions != versions:
+    old_versions = re.findall(r'version = "(.*)"', old_content)
+    new_versions = [ver for (_, ver) in name_ver_pairs]
+    if old_versions != new_versions:
         content = (
             header
-            + "".join([body_template.format(version=version) for version in versions])
+            + "".join(
+                [
+                    body_template.format(name=name, version=ver)
+                    for (name, ver) in name_ver_pairs
+                ]
+            )
             + footer
         )
         path.write_text(content)
-        commit_message_detail += f"{old_versions}\n->\n{versions}"
+        commit_message_detail += f"{old_versions}\n->\n{new_versions}"
         return True
     else:
         return False
@@ -117,11 +121,23 @@ def commit():
 
 
 def main():
-    versions = fetch_gh_release_ver()
-    updated = generate_nix(versions)
+    prereleases = fetch_gh_release_ver(True, PRERELEASES)
+    releases = fetch_gh_release_ver(False, RELEASES)
+    releases = [r for r in releases if r not in prereleases]
+
+    name_ver_pairs = []
+    if PRERELEASES > 0:
+        name_ver_pairs.append(("sing-box-prerelease", prereleases[0]))
+    if RELEASES > 0:
+        name_ver_pairs.append(("sing-box-release", releases[0]))
+    name_ver_pairs.extend([(f"sing-box-{ver}", ver) for ver in releases])
+    name_ver_pairs.extend([(f"sing-box-{ver}", ver) for ver in prereleases])
+    # Fix https://github.com/garnix-io/issues/issues/83
+    name_ver_pairs = [(name.replace(".", "_"), ver) for (name, ver) in name_ver_pairs]
+    updated = generate_nix(name_ver_pairs)
     paths = []
     if updated:
-        pkgs = [f"'\"sing-box-{ver}\"'" for ver in versions]
+        pkgs = [name for (name, _) in name_ver_pairs]
         for pkg in pkgs:
             paths.extend(build_and_update_hash(pkg))
         l.info(commit_message_detail)
