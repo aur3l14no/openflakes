@@ -5,7 +5,7 @@ on:
   #     - master
   workflow_dispatch:
   schedule:
-    - cron: "42 12,20,4 * * *" # 4,12,20 in UTC+8
+    - cron: "39 3,11,19 * * *" # same in UTC and UTC+8
 jobs:
   build:
     strategy:
