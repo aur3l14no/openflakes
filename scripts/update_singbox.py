@@ -10,8 +10,8 @@ from tenacity import retry, stop_after_attempt
 from lib import l, sh, sh_
 
 CACHIX_NAME = "aur3l14no"
-RELEASES = 1
-PRERELEASES = 0
+RELEASES = 3
+PRERELEASES = 5
 
 l.basicConfig(level=l.INFO)
 
