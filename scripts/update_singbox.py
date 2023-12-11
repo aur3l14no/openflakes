@@ -31,7 +31,8 @@ def fetch_gh_release_ver(is_prerelease=False, count=5):
     """Git latest `n` versions using GitHub API."""
     j = s.get("https://api.github.com/repos/SagerNet/sing-box/releases").json()
     try:
-        return [r["name"] for r in j if r["prerelease"] == is_prerelease][:count]
+        # tag_name always begins with 'v'
+        return [r["tag_name"][1:] for r in j if r["prerelease"] == is_prerelease][:count]
     except Exception:
         raise Exception(f"Failed to decode {j[0]}")
 
