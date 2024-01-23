@@ -20,15 +20,31 @@ pkgs: {
     buildGoModule = args:
       pkgs.buildGoModule (args
         // {
-          version = "1.8.2";
+          version = "1.8.4";
           src = pkgs.fetchFromGitHub {
             owner = "SagerNet";
             repo = "sing-box";
-            rev = "v1.8.2";
-            hash = "sha256-+N+3RfWOIM6bZAxmmfG3jMWICWKvOC1CV4hBv8oZjIM=";
+            rev = "v1.8.4";
+            hash = "sha256-Zn2akHyStq014k4ze3zsqASFnn6VTQ6fu1HdYMBDI1Y=";
           };
-          vendorHash = "sha256-NgtZ0z/9X+GWaZqQJMecF/Bxq9u8JKCewgQGSru+EJc=";
-          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.8.2"];
+          vendorHash = "sha256-L5TFMwhxit4Bm6h6KSEygKxGHbflNa0UQ9lzNqsvuGA=";
+          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.8.4"];
+        });
+  };
+
+  "sing-box-1_8_4" = pkgs.sing-box.override {
+    buildGoModule = args:
+      pkgs.buildGoModule (args
+        // {
+          version = "1.8.4";
+          src = pkgs.fetchFromGitHub {
+            owner = "SagerNet";
+            repo = "sing-box";
+            rev = "v1.8.4";
+            hash = "sha256-Zn2akHyStq014k4ze3zsqASFnn6VTQ6fu1HdYMBDI1Y=";
+          };
+          vendorHash = "sha256-L5TFMwhxit4Bm6h6KSEygKxGHbflNa0UQ9lzNqsvuGA=";
+          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.8.4"];
         });
   };
 
@@ -61,22 +77,6 @@ pkgs: {
           };
           vendorHash = "sha256-NgtZ0z/9X+GWaZqQJMecF/Bxq9u8JKCewgQGSru+EJc=";
           ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.8.1"];
-        });
-  };
-
-  "sing-box-1_8_0" = pkgs.sing-box.override {
-    buildGoModule = args:
-      pkgs.buildGoModule (args
-        // {
-          version = "1.8.0";
-          src = pkgs.fetchFromGitHub {
-            owner = "SagerNet";
-            repo = "sing-box";
-            rev = "v1.8.0";
-            hash = "sha256-MKvqnPHcao7Hpc6C2kEmBAAC3lHHI1nQ+Zpco9WwqoU=";
-          };
-          vendorHash = "sha256-8qNH4tQQMwVMpyUTrpL6StkYawO1kWOYXorRTh4GeIQ=";
-          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.8.0"];
         });
   };
 
