@@ -4,15 +4,15 @@ pkgs: {
     buildGoModule = args:
       pkgs.buildGoModule (args
         // {
-          version = "1.10.0-alpha.13";
+          version = "1.10.0-alpha.14";
           src = pkgs.fetchFromGitHub {
             owner = "SagerNet";
             repo = "sing-box";
-            rev = "v1.10.0-alpha.13";
-            hash = "sha256-kI7zi332Do0VRvPIoaON5PlMtELoJrtVVmMrPjJ4Efs=";
+            rev = "v1.10.0-alpha.14";
+            hash = "sha256-KQqJMrJ2qYA7KrTdOm/JN4H2q5j7kiGJPS0knN415ZA=";
           };
-          vendorHash = "sha256-nL1srkSvq8BZb4DdNZFscFS5dcQw/Rh9DNZjZjOrKgM=";
-          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.10.0-alpha.13"];
+          vendorHash = "sha256-T5v7FcHUK9EK3F5qdL2khQMRIcerG2ibWvMgGoCNTyA=";
+          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.10.0-alpha.14"];
         });
   };
 
@@ -80,6 +80,22 @@ pkgs: {
         });
   };
 
+  "sing-box-1_10_0-alpha_14" = pkgs.sing-box.override {
+    buildGoModule = args:
+      pkgs.buildGoModule (args
+        // {
+          version = "1.10.0-alpha.14";
+          src = pkgs.fetchFromGitHub {
+            owner = "SagerNet";
+            repo = "sing-box";
+            rev = "v1.10.0-alpha.14";
+            hash = "sha256-KQqJMrJ2qYA7KrTdOm/JN4H2q5j7kiGJPS0knN415ZA=";
+          };
+          vendorHash = "sha256-T5v7FcHUK9EK3F5qdL2khQMRIcerG2ibWvMgGoCNTyA=";
+          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.10.0-alpha.14"];
+        });
+  };
+
   "sing-box-1_10_0-alpha_13" = pkgs.sing-box.override {
     buildGoModule = args:
       pkgs.buildGoModule (args
@@ -141,22 +157,6 @@ pkgs: {
           };
           vendorHash = "sha256-qw1D38kMHVVAKmnEpdZgz6oMysb1dvv4pN+XIQiSVK4=";
           ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.10.0-alpha.10"];
-        });
-  };
-
-  "sing-box-1_10_0-alpha_8" = pkgs.sing-box.override {
-    buildGoModule = args:
-      pkgs.buildGoModule (args
-        // {
-          version = "1.10.0-alpha.8";
-          src = pkgs.fetchFromGitHub {
-            owner = "SagerNet";
-            repo = "sing-box";
-            rev = "v1.10.0-alpha.8";
-            hash = "sha256-qikM7MtgXnqu1MaKoN1iJMDS6SxmRDK65QnJjVK0GYw=";
-          };
-          vendorHash = "sha256-cncWx6AHXZtolR0VaXR17Tw9E077fH1q9eetyZyFfLE=";
-          ldflags = ["-X=github.com/sagernet/sing-box/constant.Version=1.10.0-alpha.8"];
         });
   };
 }
