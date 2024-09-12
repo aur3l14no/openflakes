@@ -312,11 +312,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1700564792,
-        "narHash": "sha256-pXYTCfyzjVHeNwVfjMpdmArLAr0cn2x7YV8AUOJew7w=",
+        "lastModified": 1726132715,
+        "narHash": "sha256-DkHWWpvBco2yodyOk40LjTNcoaJ1bFKf0JY9OwWgy5M=",
         "owner": "euank",
         "repo": "yaml2nix",
-        "rev": "ddaa23e652b644d10e6d902797824d43ee1953a6",
+        "rev": "3a6df359da40ee49cb9ed597c2400342b76f2083",
         "type": "github"
       },
       "original": {
