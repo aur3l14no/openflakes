@@ -10,10 +10,6 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable-nixos";
     };
-    nix-ld-rs = {
-      url = "github:nix-community/nix-ld-rs";
-      inputs.nixpkgs.follows = "nixpkgs-unstable-nixos";
-    };
   };
 
   nixConfig = {
@@ -37,9 +33,6 @@
           // {
             yaml2nix = inputs.yaml2nix.outputs.packages.${system}.yaml2nix;
             sops-install-secrets = inputs.sops-nix.outputs.packages.${system}.sops-install-secrets;
-          }
-          // lib.optionalAttrs (system == "x86_64-linux" || system == "aarch64-linux") {
-            nix-ld-rs = inputs.nix-ld-rs.outputs.packages.${system}.nix-ld-rs;
           };
         formatter = pkgs.alejandra;
         devShell = pkgs.mkShellNoCC {
