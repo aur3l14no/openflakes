@@ -13,26 +13,30 @@
   };
 
   nixConfig = {
-    extra-substituters = ["https://aur3l14no.cachix.org"];
-    extra-trusted-public-keys = ["aur3l14no.cachix.org-1:jxuBM4n3aEvFMkxO1I/LqmAIExoXIkNzAj6tZAd6oC4="];
+    extra-substituters = [ "https://aur3l14no.cachix.org" ];
+    extra-trusted-public-keys = [ "aur3l14no.cachix.org-1:jxuBM4n3aEvFMkxO1I/LqmAIExoXIkNzAj6tZAd6oC4=" ];
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-    ...
-  } @ inputs:
-    flake-utils.lib.eachSystem ["x86_64-linux" "aarch64-linux" "aarch64-darwin"] (
-      system: let
+  outputs =
+    { self
+    , nixpkgs
+    , flake-utils
+    , ...
+    } @ inputs:
+    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ] (
+      system:
+      let
         pkgs = nixpkgs.legacyPackages.${system};
         lib = pkgs.lib;
-      in {
+      in
+      {
         packages =
           (import ./pkgs/sing-box) pkgs
           // {
             yaml2nix = inputs.yaml2nix.outputs.packages.${system}.yaml2nix;
-            sops-install-secrets = inputs.sops-nix.outputs.packages.${system}.sops-install-secrets;
+            inherit (inputs.sops-nix.outputs.packages.${system})
+              sops-install-secrets
+              ;
           };
         formatter = pkgs.alejandra;
         devShell = pkgs.mkShellNoCC {
@@ -41,7 +45,7 @@
             fish
             just
             jq
-            (python311.withPackages (ps: with ps; [requests requests-cache tenacity typer]))
+            (python311.withPackages (ps: with ps; [ requests requests-cache tenacity typer ]))
           ];
         };
       }
