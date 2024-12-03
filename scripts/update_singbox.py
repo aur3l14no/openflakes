@@ -32,7 +32,9 @@ def fetch_gh_release_ver(is_prerelease=False, count=5):
     j = s.get("https://api.github.com/repos/SagerNet/sing-box/releases").json()
     try:
         # tag_name always begins with 'v'
-        return [r["tag_name"][1:] for r in j if r["prerelease"] == is_prerelease][:count]
+        return [r["tag_name"][1:] for r in j if r["prerelease"] == is_prerelease][
+            :count
+        ]
     except Exception:
         raise Exception(f"Failed to decode {j[0]}")
 
@@ -90,7 +92,7 @@ def build_and_update_hash(pkg):
     l.info(f"Building {pkg}")
 
     max_attempts = 3
-    for n_attempts in range(0, max_attempts):
+    for _ in range(0, max_attempts):
         p = sh_(f"nix build .#{pkg} --json")
         if p.returncode != 0:
             try:
@@ -125,9 +127,9 @@ def main(force_update: Annotated[bool, typer.Option(help="Force update")] = Fals
     releases = [r for r in releases if r not in prereleases]
     name_ver_pairs = []
     if PRERELEASES > 0:
-        name_ver_pairs.append(("sing-box-prerelease", prereleases[0]))
+        name_ver_pairs.append(("sing-box-pre", prereleases[0]))
     if RELEASES > 0:
-        name_ver_pairs.append(("sing-box-release", releases[0]))
+        name_ver_pairs.append(("sing-box", releases[0]))
     name_ver_pairs.extend([(f"sing-box-{ver}", ver) for ver in releases])
     name_ver_pairs.extend([(f"sing-box-{ver}", ver) for ver in prereleases])
     # Fix https://github.com/garnix-io/issues/issues/83
