@@ -97,8 +97,8 @@ def build_and_update_hash(pkg):
         if p.returncode != 0:
             try:
                 # mismatch error
-                specified = re.search("specified:\s*(.+)$", p.stderr, re.M).group(1)
-                got = re.search("got:\s*(.+)$", p.stderr, re.M).group(1)
+                specified = re.search(r"specified:\s*(.+)$", p.stderr, re.M).group(1)
+                got = re.search(r"got:\s*(.+)$", p.stderr, re.M).group(1)
                 content = path.read_text()
                 content = content.replace(specified, got, 1)
                 path.write_text(content)
