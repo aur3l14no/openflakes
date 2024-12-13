@@ -24,7 +24,7 @@ jobs:
 
       - name: Push cache
         run: |
-          nix develop -c just cache
+          nix develop -c scripts/upload_cache.sh
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

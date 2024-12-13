@@ -47,21 +47,15 @@
         in
         {
           packages = sing-box-packages-underscore // sing-box-packages-dot;
-          formatter = pkgs.alejandra;
+          formatter = pkgs.nixfmt-rfc-style;
           devShell = pkgs.mkShellNoCC {
             packages = with pkgs; [
               act
-              just
               jq
               nix-update
-              (python3.withPackages (
-                ps: with ps; [
-                  httpx
-                ]
-              ))
+              (python3.withPackages (ps: with ps; [ httpx ]))
             ];
           };
-          lib = pkgs.lib;
         }
       );
 }
