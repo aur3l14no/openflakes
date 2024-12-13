@@ -29,27 +29,39 @@
       (
         system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [
+              (final: prev: {
+                myLib = import ./lib final;
+              })
+            ];
+          };
+          sing_box_packages_dot = (pkgs.myLib.callPackageVariants ./pkgs/sing-box { }) // {
+            sing-box = pkgs.callPackage ./pkgs/sing-box/default.nix { };
+          };
+          sing_box_packages_underscore = pkgs.lib.mapAttrs' (name: value: {
+            name = builtins.replaceStrings [ "." ] [ "_" ] name;
+            value = value;
+          }) sing_box_packages_dot;
         in
         {
-          packages = (import ./pkgs/sing-box) pkgs // { };
+          packages = sing_box_packages_underscore // sing_box_packages_dot;
           formatter = pkgs.alejandra;
           devShell = pkgs.mkShellNoCC {
             packages = with pkgs; [
               act
-              fish
               just
               jq
+              nix-update
               (python3.withPackages (
                 ps: with ps; [
-                  requests
-                  requests-cache
-                  tenacity
-                  typer
+                  httpx
                 ]
               ))
             ];
           };
+          lib = pkgs.lib;
         }
       );
 }
