@@ -37,16 +37,16 @@
               })
             ];
           };
-          sing_box_packages_dot = (pkgs.myLib.callPackageVariants ./pkgs/sing-box { }) // {
+          sing-box-packages-dot = (pkgs.myLib.callPackageVariants ./pkgs/sing-box { }) // {
             sing-box = pkgs.callPackage ./pkgs/sing-box/default.nix { };
           };
-          sing_box_packages_underscore = pkgs.lib.mapAttrs' (name: value: {
+          sing-box-packages-underscore = pkgs.lib.mapAttrs' (name: value: {
             name = builtins.replaceStrings [ "." ] [ "_" ] name;
             value = value;
-          }) sing_box_packages_dot;
+          }) sing-box-packages-dot;
         in
         {
-          packages = sing_box_packages_underscore // sing_box_packages_dot;
+          packages = sing-box-packages-underscore // sing-box-packages-dot;
           formatter = pkgs.alejandra;
           devShell = pkgs.mkShellNoCC {
             packages = with pkgs; [
