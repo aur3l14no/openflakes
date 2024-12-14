@@ -40,7 +40,7 @@ jobs:
 
       - name: Build and commit
         run: |
-          nix develop -c just
+          nix develop -c scripts/update_singbox.py
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
