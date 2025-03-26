@@ -4,13 +4,13 @@
   fetchFromGitHub,
 }:
 sing-box.overrideAttrs (oldAttrs: rec {
-  version = "1.12.0-alpha.19";
+  version = "1.12.0-alpha.20";
   src = fetchFromGitHub {
     owner = "SagerNet";
     repo = "sing-box";
     rev = "v${version}";
-    hash = "sha256-pCvR3GjP57BDqrgUHB0hE0VvYr8cevCegXROEtMTVf0=";
+    hash = "sha256-aw8abQccOOyCLFafC4xxteoWiIFWYcF2zz92toKSyHw=";
   };
-  vendorHash = "sha256-TlDGQbUyMmlQ4I4HzC00hqeuT+z/XG9R6rKkCyPmPQI=";
+  vendorHash = "sha256-+JNzTSW/54EZWgsrevT/iK/UYAdHyuZ1RS37Wwg9X5k=";
   ldflags = [ "-X=github.com/sagernet/sing-box/constant.Version=${version}" ];
 })
