@@ -1,16 +1,88 @@
 {
-  sing-box,
+  lib,
+  stdenv,
   buildGoModule,
   fetchFromGitHub,
+  installShellFiles,
+  buildPackages,
+  coreutils,
+  nix-update-script,
+  nixosTests,
 }:
-sing-box.overrideAttrs (oldAttrs: rec {
-  version = "1.11.10";
+
+buildGoModule rec {
+  pname = "sing-box";
+  version = "1.11.11";
+
   src = fetchFromGitHub {
     owner = "SagerNet";
-    repo = "sing-box";
+    repo = pname;
     rev = "v${version}";
-    hash = "sha256-GcoAxfFH/eP97E7tN//LbNCSbEASfzDL5OYHyL54eh8=";
+    hash = "sha256-hdYYjKBXnTqScYTUCfMmXozDD8GtIorLXnsU2Fmwg/c=";
   };
-  vendorHash = "sha256-7VfAFkdI4XFkMp2GJIzPFSXyUWNwT3o+EN5gI8U/wIQ=";
-  ldflags = [ "-X=github.com/sagernet/sing-box/constant.Version=${version}" ];
-})
+
+  vendorHash = "sha256-/0pwsZbMbyAFXCrukbNf2RmQjQJ1E/ZUwzrC+5NEZcc=";
+
+  tags =
+    [
+      "with_quic"
+      "with_dhcp"
+      "with_wireguard"
+      "with_utls"
+      "with_acme"
+      "with_clash_api"
+      "with_gvisor"
+    ]
+    ++ (
+      if lib.versionAtLeast version "1.12" then
+        # >= 1.12
+        [
+          "with_tailscale"
+        ]
+      else
+        # <= 1.11
+        [
+          "with_ech"
+          "with_reality_server"
+        ]
+    );
+
+  subPackages = [
+    "cmd/sing-box"
+  ];
+
+  nativeBuildInputs = [ installShellFiles ];
+
+  ldflags = [
+    "-X=github.com/sagernet/sing-box/constant.Version=${version}"
+  ];
+
+  postInstall =
+    let
+      emulator = stdenv.hostPlatform.emulator buildPackages;
+    in
+    ''
+      installShellCompletion --cmd sing-box \
+        --bash <(${emulator} $out/bin/sing-box completion bash) \
+        --fish <(${emulator} $out/bin/sing-box completion fish) \
+        --zsh  <(${emulator} $out/bin/sing-box completion zsh )
+
+      substituteInPlace release/config/sing-box{,@}.service \
+        --replace-fail "/usr/bin/sing-box" "$out/bin/sing-box" \
+        --replace-fail "/bin/kill" "${coreutils}/bin/kill"
+      install -Dm444 -t "$out/lib/systemd/system/" release/config/sing-box{,@}.service
+    '';
+
+  passthru = {
+    updateScript = nix-update-script { };
+    tests = { inherit (nixosTests) sing-box; };
+  };
+
+  meta = with lib; {
+    homepage = "https://sing-box.sagernet.org";
+    description = "Universal proxy platform";
+    license = licenses.gpl3Plus;
+    maintainers = with maintainers; [ nickcao ];
+    mainProgram = "sing-box";
+  };
+}
