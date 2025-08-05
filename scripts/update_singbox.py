@@ -15,6 +15,7 @@ releases = httpx.get(
     params={
         "per_page": 100,
     },
+    timeout=60,
 ).json()
 prereleases = [r for r in releases if r["prerelease"]]
 releases = [r for r in releases if not r["prerelease"]]
