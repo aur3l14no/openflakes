@@ -44,9 +44,12 @@
             name = builtins.replaceStrings [ "." ] [ "_" ] name;
             value = value;
           }) sing-box-packages-dot;
+          sjsonnet = pkgs.callPackage ./pkgs/sjsonnet { };
         in
         {
-          packages = sing-box-packages-underscore // sing-box-packages-dot;
+          packages = sing-box-packages-underscore // sing-box-packages-dot // {
+            inherit sjsonnet;
+          };
           formatter = pkgs.nixfmt-rfc-style;
           devShell = pkgs.mkShellNoCC {
             packages = with pkgs; [

@@ -8,5 +8,6 @@
 Open flakes.
 
 - ⚙ "sing-box-x.y.z": sing-box releases
+- "sjsonnet": Scala Jsonnet implementation CLI bundle
 
 (⚙: automated update)
