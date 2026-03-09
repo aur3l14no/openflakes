@@ -12,7 +12,7 @@
 
 let
   packageVersion = "1.13.2";
-  withUpstreamModernDefaults = lib.versionAtLeast packageVersion "1.14";
+  withUpstreamModernDefaults = lib.versionAtLeast packageVersion "1.13";
   withNaiveOutbound =
     withUpstreamModernDefaults
     && stdenv.hostPlatform.isLinux
