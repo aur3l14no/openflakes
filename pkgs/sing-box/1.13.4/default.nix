@@ -11,7 +11,7 @@
 }:
 
 let
-  packageVersion = "1.13.2";
+  packageVersion = "1.13.4";
   withUpstreamModernDefaults = lib.versionAtLeast packageVersion "1.13";
   withNaiveOutbound =
     withUpstreamModernDefaults
@@ -27,10 +27,10 @@ buildGoModule rec {
     owner = "SagerNet";
     repo = pname;
     rev = "v${version}";
-    hash = "sha256-hoqEaliddv9G91QdU1DQTag/HsViqRBML2a9iGNEcaI=";
+    hash = "sha256-4u1GgIBXkFrorcZ9Z+83peaIlZHmUp6zmsZWC4k9GkY=";
   };
 
-  vendorHash = "sha256-HAfBXVwwWM6x2Dj1jYXKrmeKtDMXRcYwkbondWkUonI=";
+  vendorHash = "sha256-mfgCwTXwd6T1mzmHR3tTF4aKtfn4ehztVyeXrtEKDsk=";
 
   tags = [
     "with_quic"
