@@ -1,13 +1,25 @@
 # OpenFlakes
 
-![Build and update hash](https://github.com/aur3l14no/openflakes/workflows/Build%20and%20update%20hash/badge.svg)
-![Push cache](https://github.com/aur3l14no/openflakes/workflows/Push%20cache/badge.svg)
+[![Build and cache](https://github.com/aur3l14no/openflakes/actions/workflows/build.yml/badge.svg)](https://github.com/aur3l14no/openflakes/actions/workflows/build.yml)
 [![Cachix Cache](https://img.shields.io/badge/cachix-aur3l14no-blue.svg)](https://aur3l14no.cachix.org)
-[![built with garnix](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fgarnix.io%2Fapi%2Fbadges%2Faur3l14no%2Fopenflakes%3Fbranch%3Dmaster)](https://garnix.io)
 
 Open flakes.
 
 - ⚙ "sing-box-x.y.z": sing-box releases
+- "sing-box-bundle": self-extracting single-file bundle of the latest stable sing-box (Linux)
 - "sjsonnet": Scala Jsonnet implementation CLI bundle
 
 (⚙: automated update)
+
+## Fetching prebuilt artifacts
+
+Builds are pushed to [aur3l14no.cachix.org](https://aur3l14no.cachix.org) for `x86_64-linux`, `aarch64-linux`, and `aarch64-darwin`. To pull a package without building locally:
+
+```sh
+nix build \
+  --builders '' \
+  --max-jobs 0 \
+  --option extra-substituters https://aur3l14no.cachix.org \
+  --option extra-trusted-public-keys aur3l14no.cachix.org-1:jxuBM4n3aEvFMkxO1I/LqmAIExoXIkNzAj6tZAd6oC4= \
+  github:aur3l14no/openflakes#packages.x86_64-linux.sing-box-bundle
+```

@@ -1,5 +1,7 @@
 name: Build and cache
 on:
+  push:
+    branches: [master]
   workflow_dispatch:
   schedule:
     - cron: "39 3,11,19 * * *" # same in UTC and UTC+8
