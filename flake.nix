@@ -51,6 +51,7 @@
             value = value;
           }) sing-box-packages;
           sjsonnet = pkgs.callPackage ./pkgs/sjsonnet { };
+          sing-box-bundle = bundlers.bundlers.${system}.default sing-box-packages.sing-box;
           sing-box-appimage = bundlers.bundlers.${system}.toAppImage sing-box-packages.sing-box;
         in
         {
@@ -61,6 +62,7 @@
               inherit sjsonnet;
             }
             // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+              inherit sing-box-bundle;
               inherit sing-box-appimage;
             };
           formatter = pkgs.nixfmt-rfc-style;
