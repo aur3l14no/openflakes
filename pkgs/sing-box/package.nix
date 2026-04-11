@@ -16,10 +16,8 @@
 }:
 
 let
-  withUpstreamModernDefaults = lib.versionAtLeast version "1.13";
   withNaiveOutbound =
-    withUpstreamModernDefaults
-    && stdenv.hostPlatform.isLinux
+    stdenv.hostPlatform.isLinux
     && (stdenv.hostPlatform.isx86_64 || stdenv.hostPlatform.isAarch64);
   libcronetVendorDir = if stdenv.hostPlatform.isx86_64 then "linux_amd64" else "linux_arm64";
 in
@@ -43,21 +41,7 @@ buildGoModule {
     "with_clash_api"
     "with_v2ray_api"
     "with_gvisor"
-  ]
-  ++ (
-    if lib.versionAtLeast version "1.12" then
-      # >= 1.12
-      [
-        "with_tailscale"
-      ]
-    else
-      # <= 1.11
-      [
-        "with_ech"
-        "with_reality_server"
-      ]
-  )
-  ++ lib.optionals withUpstreamModernDefaults [
+    "with_tailscale"
     "with_ccm"
     "with_ocm"
     "badlinkname"
@@ -78,14 +62,11 @@ buildGoModule {
 
   nativeBuildInputs = [ installShellFiles ];
 
-  ldflags =
-    lib.optionals withUpstreamModernDefaults [
-      "-X=internal/godebug.defaultGODEBUG=multipathtcp=0"
-      "-checklinkname=0"
-    ]
-    ++ [
-      "-X=github.com/sagernet/sing-box/constant.Version=${version}"
-    ];
+  ldflags = [
+    "-X=internal/godebug.defaultGODEBUG=multipathtcp=0"
+    "-checklinkname=0"
+    "-X=github.com/sagernet/sing-box/constant.Version=${version}"
+  ];
 
   postInstall =
     let
