@@ -4,7 +4,10 @@ on:
     branches: [master]
   workflow_dispatch:
   schedule:
+    # Daily sing-box version check (cheap: no-op unless upstream released).
     - cron: "39 3,11,19 * * *" # same in UTC and UTC+8
+    # Weekly flake input bump (Monday ~04:39 UTC). Triggers a full rebuild.
+    - cron: "39 4 * * 1"
 
 permissions:
   contents: write
@@ -37,6 +40,11 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Bump flake inputs
+        # Only on the weekly cron or an explicit manual dispatch. Daily
+        # crons and push events skip this step so the cache survives.
+        if: >-
+          github.event_name == 'workflow_dispatch'
+          || (github.event_name == 'schedule' && github.event.schedule == '39 4 * * 1')
         run: |
           nix flake update
           git add -u
