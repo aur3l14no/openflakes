@@ -6,7 +6,7 @@
 Open flakes.
 
 - ⚙ "sing-box-x.y.z": sing-box releases
-- "sing-box-bundle": self-extracting single-file bundle of the latest stable sing-box (Linux)
+- "sing-box-appimage": appimage for latest stable sing-box
 - "sjsonnet": Scala Jsonnet implementation CLI bundle
 
 (⚙: automated update)
@@ -21,5 +21,5 @@ nix build \
   --max-jobs 0 \
   --option extra-substituters https://aur3l14no.cachix.org \
   --option extra-trusted-public-keys aur3l14no.cachix.org-1:jxuBM4n3aEvFMkxO1I/LqmAIExoXIkNzAj6tZAd6oC4= \
-  github:aur3l14no/openflakes#packages.x86_64-linux.sing-box-bundle
+  github:aur3l14no/openflakes#packages.x86_64-linux.sing-box-appimage
 ```

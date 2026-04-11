@@ -4,8 +4,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    nix-bundle = {
-      url = "github:nix-community/nix-bundle";
+    bundlers = {
+      url = "github:NixOS/bundlers";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -22,7 +22,7 @@
       self,
       nixpkgs,
       flake-utils,
-      nix-bundle,
+      bundlers,
       ...
     }@inputs:
     flake-utils.lib.eachSystem
@@ -42,28 +42,26 @@
               })
             ];
           };
-          sing-box-packages-dot = (pkgs.myLib.callPackageVariants ./pkgs/sing-box { }) // {
+          sing-box-packages = (pkgs.myLib.callPackageVariants ./pkgs/sing-box { }) // {
             sing-box = pkgs.callPackage ./pkgs/sing-box/default.nix { };
           };
+          # intentionally left here for nix-update to work
           sing-box-packages-underscore = pkgs.lib.mapAttrs' (name: value: {
             name = builtins.replaceStrings [ "." ] [ "_" ] name;
             value = value;
-          }) sing-box-packages-dot;
+          }) sing-box-packages;
           sjsonnet = pkgs.callPackage ./pkgs/sjsonnet { };
-          # Self-extracting single-file bundle of the latest stable
-          # sing-box, including libcronet.so for naive outbound. Fetchable
-          # from the binary cache with `nix build --max-jobs 0`.
-          sing-box-bundle = nix-bundle.bundlers.${system}.default sing-box-packages-dot.sing-box;
+          sing-box-appimage = bundlers.bundlers.${system}.toAppImage sing-box-packages.sing-box;
         in
         {
           packages =
             sing-box-packages-underscore
-            // sing-box-packages-dot
+            // sing-box-packages
             // {
               inherit sjsonnet;
             }
             // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
-              inherit sing-box-bundle;
+              inherit sing-box-appimage;
             };
           formatter = pkgs.nixfmt-rfc-style;
           devShell = pkgs.mkShellNoCC {
