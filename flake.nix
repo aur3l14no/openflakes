@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    nix-bundle = {
+      url = "github:nix-community/nix-bundle";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
@@ -18,6 +22,7 @@
       self,
       nixpkgs,
       flake-utils,
+      nix-bundle,
       ...
     }@inputs:
     flake-utils.lib.eachSystem
@@ -45,11 +50,21 @@
             value = value;
           }) sing-box-packages-dot;
           sjsonnet = pkgs.callPackage ./pkgs/sjsonnet { };
+          # Self-extracting single-file bundle of the latest stable
+          # sing-box, including libcronet.so for naive outbound. Fetchable
+          # from the binary cache with `nix build --max-jobs 0`.
+          sing-box-bundle = nix-bundle.bundlers.${system}.default sing-box-packages-dot.sing-box;
         in
         {
-          packages = sing-box-packages-underscore // sing-box-packages-dot // {
-            inherit sjsonnet;
-          };
+          packages =
+            sing-box-packages-underscore
+            // sing-box-packages-dot
+            // {
+              inherit sjsonnet;
+            }
+            // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+              inherit sing-box-bundle;
+            };
           formatter = pkgs.nixfmt-rfc-style;
           devShell = pkgs.mkShellNoCC {
             packages = with pkgs; [

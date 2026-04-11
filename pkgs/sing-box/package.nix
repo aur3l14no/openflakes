@@ -17,8 +17,7 @@
 
 let
   withNaiveOutbound =
-    stdenv.hostPlatform.isLinux
-    && (stdenv.hostPlatform.isx86_64 || stdenv.hostPlatform.isAarch64);
+    stdenv.hostPlatform.isLinux && (stdenv.hostPlatform.isx86_64 || stdenv.hostPlatform.isAarch64);
   libcronetVendorDir = if stdenv.hostPlatform.isx86_64 then "linux_amd64" else "linux_arm64";
 in
 buildGoModule {
