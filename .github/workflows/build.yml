@@ -3,6 +3,12 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      refresh_existing:
+        description: Refresh hashes for retained existing sing-box versions
+        required: false
+        type: boolean
+        default: false
   schedule:
     # Daily sing-box version check (cheap: no-op unless upstream released).
     - cron: "39 3,11,19 * * *" # same in UTC and UTC+8
@@ -51,9 +57,15 @@ jobs:
           git diff --cached --quiet || git commit -m "Bump inputs"
 
       - name: Update sing-box versions
-        run: nix develop -c scripts/update_singbox.py
+        run: |
+          args=()
+          if [ "$REFRESH_EXISTING" = "true" ]; then
+            args+=(--refresh-existing)
+          fi
+          nix develop -c scripts/update_singbox.py "${args[@]}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REFRESH_EXISTING: ${{ github.event_name == 'workflow_dispatch' && inputs.refresh_existing }}
 
       - name: Push
         run: git push || true

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import argparse
 import os
 import pathlib
 import re
@@ -9,6 +10,20 @@ import httpx
 
 N_RELEASES = 3
 N_PRERELEASES = 5
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--refresh-existing",
+    action="store_true",
+    help="Refresh hashes for retained sing-box versions that already exist.",
+)
+parser.add_argument(
+    "--no-commit",
+    action="store_true",
+    help="Leave changes in the working tree instead of committing them.",
+)
+args = parser.parse_args()
 
 # releases
 headers = {}
@@ -47,17 +62,23 @@ stale_dirs = [d for d in dirs if d not in versions and d not in alias_names]
 commit_message = f"New sing-box versions: {', '.join(new_versions)}"
 
 
-def nix_update(attribute, version, filename):
+def attr_name(version):
+    return f"sing-box-{version.replace('.', '_')}"
+
+
+def nix_update(attribute, version, filename, *, refresh=False):
+    requested_version = "skip" if refresh else version
     return sp.run(
         [
             "nix-update",
             "--flake",
             "--version",
-            version,
+            requested_version,
             "--override-filename",
             str(filename),
             attribute,
-        ]
+        ],
+        check=True,
     )
 
 
@@ -75,7 +96,7 @@ def create_version(name, version):
     (root / name / "default.nix").write_text(content)
     sp.run(["git", "add", "-A"])
     nix_update(
-        f"sing-box-{name.replace('.', '_')}",
+        attr_name(name),
         version,
         root / name / "default.nix",
     )
@@ -102,6 +123,20 @@ if prerelease_version is None and (root / "pre").exists():
 for version in new_versions:
     create_version(version, version)
 
+refreshed_versions = []
+if args.refresh_existing:
+    nix_update("sing-box", release_version, root / "default.nix", refresh=True)
+
+    existing_versions = [v for v in versions if v not in new_versions]
+    for version in existing_versions:
+        nix_update(
+            attr_name(version),
+            version,
+            root / version / "default.nix",
+            refresh=True,
+        )
+        refreshed_versions.append(version)
+
 for minor in minor_versions:
     for version in versions:
         if version.startswith(minor + "."):
@@ -111,6 +146,17 @@ for minor in minor_versions:
 if prerelease_version is not None:
     sync_alias("pre", prerelease_version)
 
-sp.run(["git", "add", "-A"])
-sp.run(["git", "commit", "-m", commit_message])
-print(commit_message)
+messages = []
+if new_versions:
+    messages.append(commit_message)
+if refreshed_versions:
+    messages.append(f"Refresh sing-box versions: {', '.join(refreshed_versions)}")
+if not messages:
+    messages.append("No sing-box version changes")
+
+if not args.no_commit:
+    sp.run(["git", "add", "-A"])
+    if sp.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0:
+        sp.run(["git", "commit", "-m", "; ".join(messages)], check=True)
+
+print("; ".join(messages))
