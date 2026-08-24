@@ -1,5 +1,5 @@
 import ../package.nix {
-  version = "1.14.0-beta.17";
-  hash = "sha256-7kn2UcCbea3v203U4knzbCKQECPCobIQXMy705RYucQ=";
-  vendorHash = "sha256-9Cv3WJG2C3yMk1d8UCLMIhgM5Q9dYAYp7A0F1LdZm/s=";
+  version = "1.14.0-rc.1";
+  hash = "sha256-SMFPB3ab2Y/Aakbgnaz1iDp0ZF+iHE3BOvoRojII9Cc=";
+  vendorHash = "sha256-ea9oaMryf4qEc3bjkEzFN+Rt8djnhM8AqmKUG65xCVc=";
 }
