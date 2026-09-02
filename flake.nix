@@ -61,11 +61,11 @@
             // {
               inherit sjsonnet;
             }
-            // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+            // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
               inherit sing-box-bundle;
               inherit sing-box-appimage;
             };
-          formatter = pkgs.nixfmt-rfc-style;
+          formatter = pkgs.nixfmt;
           devShell = pkgs.mkShellNoCC {
             packages = with pkgs; [
               act
