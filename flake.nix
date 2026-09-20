@@ -53,6 +53,12 @@
           sjsonnet = pkgs.callPackage ./pkgs/sjsonnet { };
           sing-box-bundle = bundlers.bundlers.${system}.default sing-box-packages.sing-box;
           sing-box-appimage = bundlers.bundlers.${system}.toAppImage sing-box-packages.sing-box;
+          # Static build for hosts that copy the binary (naive/purego dlopen libcronet).
+          sing-box-static = sing-box-packages.sing-box.overrideAttrs (old: {
+            tags = builtins.filter (t: t != "with_naive_outbound" && t != "with_purego") old.tags;
+            postInstall = "";
+            ldflags = old.ldflags ++ [ "-s" "-w" ];
+          });
         in
         {
           packages =
@@ -64,6 +70,7 @@
             // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
               inherit sing-box-bundle;
               inherit sing-box-appimage;
+              inherit sing-box-static;
             };
           formatter = pkgs.nixfmt;
           devShell = pkgs.mkShellNoCC {
