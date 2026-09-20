@@ -53,6 +53,9 @@
           sjsonnet = pkgs.callPackage ./pkgs/sjsonnet { };
           sing-box-bundle = bundlers.bundlers.${system}.default sing-box-packages.sing-box;
           sing-box-appimage = bundlers.bundlers.${system}.toAppImage sing-box-packages.sing-box;
+          sing-box-bin = pkgs.callPackage ./pkgs/sing-box-bin {
+            inherit (sing-box-packages) sing-box;
+          };
         in
         {
           packages =
@@ -60,6 +63,7 @@
             // sing-box-packages
             // {
               inherit sjsonnet;
+              inherit sing-box-bin;
             }
             // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
               inherit sing-box-bundle;

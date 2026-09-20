@@ -109,3 +109,20 @@ jobs:
                 nix build --no-link ".#packages.${{ matrix.system }}.\"$attr\""
                 echo "::endgroup::"
               done
+
+      - name: Publish sing-box-bin release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          attr=".#packages.${{ matrix.system }}.sing-box-bin"
+          out="$(nix build --no-link --print-out-paths "$attr")"
+          version="$(nix eval --raw "$attr.version")"
+          tag="sing-box-$version"
+          gh release view "$tag" >/dev/null 2>&1 || \
+            gh release create "$tag" \
+              --title "sing-box $version" \
+              --notes "Static sing-box $version binaries built by openflakes CI (sing-box-bin)."
+          for artifact in "$out"/*.tar.gz "$out"/*.tar.gz.sha256; do
+            gh release upload "$tag" "$artifact" --clobber
+          done
