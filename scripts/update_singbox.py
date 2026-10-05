@@ -7,6 +7,7 @@ import shutil
 import subprocess as sp
 
 import httpx
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 N_RELEASES = 3
 N_PRERELEASES = 5
@@ -30,14 +31,20 @@ headers = {}
 if token := os.environ.get("GITHUB_TOKEN"):
     headers["Authorization"] = f"Bearer {token}"
 
-response = httpx.get(
-    "https://api.github.com/repos/SagerNet/sing-box/releases",
-    params={"per_page": 100},
-    headers=headers,
-    timeout=60,
-)
-response.raise_for_status()
-releases = response.json()
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+def fetch_releases():
+    response = httpx.get(
+        "https://api.github.com/repos/SagerNet/sing-box/releases",
+        params={"per_page": 100},
+        headers=headers,
+        timeout=60,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+releases = fetch_releases()
 
 prereleases = [r for r in releases if r["prerelease"]]
 releases = [r for r in releases if not r["prerelease"]]

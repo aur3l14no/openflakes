@@ -78,7 +78,12 @@
               act
               jq
               nix-update
-              (python3.withPackages (ps: with ps; [ httpx ]))
+              (python3.withPackages (
+                ps: with ps; [
+                  httpx
+                  tenacity
+                ]
+              ))
             ];
           };
         }
